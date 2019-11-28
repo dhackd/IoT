@@ -1,0 +1,7 @@
+rootProject.name = 'keti-iot'
+
+include 'keti-sgs-common'
+include 'keti-sgs-api-server'
+include 'keti-sgs-monitor-server'
+include 'keti-sgs-elastic-server'
+include 'keti-sgs-assembly'

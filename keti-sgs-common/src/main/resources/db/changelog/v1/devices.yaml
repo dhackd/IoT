@@ -1,0 +1,44 @@
+databaseChangeLog:
+    - changeSet:
+        id: create DEVICES table
+        author: kimdohoon
+        changes:
+            - createTable:
+                tableName: DEVICES
+                columns:
+                    - column:
+                        name: DEVICE_ID
+                        type: VARCHAR(30)
+                        constraints:
+                            nullable: false
+                    - column:
+                        name: DEVICE_ADDR
+                        type: VARCHAR(52)
+                        constraints:
+                            nullable: false
+                    - column:
+                        name: DEVICE_TYPE
+                        type: VARCHAR(10)
+                        constraints:
+                            nullable: false
+                    - column:
+                        name: TRASNACTION_ID
+                        type: VARCHAR(45)
+                    - column:
+                        name: DATA_TRANSACTION_ID
+                        type: VARCHAR(45)
+                    - column:
+                        name: DATA_UPDATED_AT
+                        type: timestamp
+                    - column:
+                        name: CREATED_AT
+                        type: timestamp
+                    - column:
+                        name: UPDATED_AT
+                        type: timestamp
+            - createIndex:
+                indexName: IDX_DEVICE_ID
+                tableName: DEVICES
+                columns:
+                  - column:
+                      name: DEVICE_ID

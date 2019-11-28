@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="layout/layout">
+
+<th:block layout:fragment="script">
+  <script src="/js/components/pagination.js"></script>
+  <!-- <script src="/js/components/commuteStatusTable.js"></script> -->
+  <!-- <script src="/js/status.js"></script> -->
+</th:block>
+
+<th:block layout:fragment="css">
+	<link href="/lib/bootstrap/bootstrap-datetimepicker.min.css" rel="stylesheet">
+</th:block>
+
+<div layout:fragment="content">
+  <div th:class="container-fluid">
+    <div class="row queryBox">
+      <span
+        class='date_title col-md-1'> 기간 </span>
+      <section class="col-md-5 datePicker"
+        th:include="components/datePicker :: datePicker"></section>
+      <section class="col-md-offset-1 col-md-5 searchBar"
+        th:include="components/searchBar :: searchBar"></section>
+    </div>
+    <div class="row manageBox">
+    </div>
+    <div class="resultBox">
+      <section
+        th:include="components/commuteStatusTable :: commuteStatusTable"></section>
+    </div>
+    <div class="pageBox">
+      <section th:include="components/pagination :: pagination"></section>
+    </div>
+    <script>
+    <!-- onRendered -->
+      /* getDropDown($('#deptList'), 'depts')
+      search() */
+    </script>
+  </div>
+</div>
+</html>

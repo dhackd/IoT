@@ -1,0 +1,89 @@
+#!/bin/bash
+# resolve links - $0 may be a softlink
+if [ -z "$keti_sgs_HOME" ];then
+  PRG="$0"
+  while [ -h "$PRG" ] ; do
+    ls=$(ls -ld "$PRG")
+    link=$(expr "$ls" : '.*-> \(.*\)$')
+    if expr "$link" : '/.*' > /dev/null; then
+      PRG="$link"
+    else
+      PRG=$(dirname "$PRG")/"$link"
+    fi
+  done
+
+  cd "$(dirname "$PRG")/.." || exit 1
+  keti_sgs_HOME="$(pwd)"
+  export keti_sgs_HOME
+  cd - &>/dev/null || exit 1
+fi
+# Option definitions
+export PRETTY_PRINT=${PRETTY_PRINT:-"Y"}
+
+# Directory definitions
+export keti_sgs_BIN=${keti_sgs_BIN:-$keti_sgs_HOME/bin}
+export keti_sgs_CONF=${keti_sgs_CONF:-$keti_sgs_HOME/conf}
+export keti_sgs_DOC=${keti_sgs_DOC:-$keti_sgs_HOME/doc}
+export keti_sgs_LIB=${keti_sgs_LIB:-$keti_sgs_HOME/lib}
+export keti_sgs_LOG=${keti_sgs_LOG:-$keti_sgs_HOME/log}
+
+export EXECUTION_MODE=native
+
+source "$keti_sgs_BIN/keti-sgs-common"
+
+if [ 0 == $# ]; then
+  fail "No command!!"
+  message "Type '$0 help' for more informations"
+  exit -1
+else
+  ARG1="$1"
+  shift
+  if [ 0 == $# ]; then
+    case "$ARG1" in
+      "help")
+        print-help $@
+        ;;
+      "version")
+        print-version $@
+        ;;
+      "server"|"client"|"code"|"token")
+        fail "More command needed!"
+        print-help $@
+        ;;
+      *)
+        fail "Unknown command!"
+        print-help $@
+        ;;
+    esac
+    exit 2
+  fi
+fi
+
+ARG2="$1"
+shift
+
+case "$ARG1" in
+  "help")
+    print-help $@
+    ;;
+  "version")
+    print-version $@
+    ;;
+  "server")
+    COMMAND_TARGET="$ARG1"
+    COMMAND="$ARG2"
+    ;;
+  *)
+    case "$ARG2" in
+      "server")
+        COMMAND_TARGET="$ARG2"
+        COMMAND="$ARG1"
+        ;;
+      *)
+        fail "Unknown command!"
+        ;;
+    esac
+    ;;
+esac
+
+declare -f $COMMAND-$COMMAND_TARGET > /dev/null && $COMMAND-$COMMAND_TARGET $@ || fail "Fail to execute the command"

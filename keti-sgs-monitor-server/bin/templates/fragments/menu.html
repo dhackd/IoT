@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="menuFragment">
+	<ul>
+   <li>
+    <a href='/deviceManage'><h3 id='deviceManage'><span>&#8226;</span> 기기 관리</h3></a>
+   </li>
+   <li>
+    <a href='/transactionManage'><h3 id='transactionManage'><span>&#8226;</span> 트랜잭션 관리</h3></a>
+   </li>
+   <li>
+    <a href='/gasReceipts'><h3 id='gasReceipts'><span>&#8226;</span> 가스 사용내역</h3></a>
+   </li>
+   <li>
+	   <h3 id='monitoring'><span class='fas fa-caret-right'></span>모니터링</h3>
+	   <ul id='monitoring_ul'>
+	    <li><a id='monitoring_servers' href='/monitoring/servers'><span>-</span> 서버</a></li>
+	    <li><a id='monitoring_devices' href='/monitoring/devices'><span>-</span> 기기</a></li>
+	   </ul>
+   </li>
+	</ul>
+	<div class='footer'>Copyright © 2019 BLOCKO.<br> All rights reserved.</div>
+
+	<script>
+	$(function(){
+		renderSelectMenu();
+		
+		// accordian menu
+		 $(".menu h3").click(function(){
+         $(".menu ul ul").slideUp();
+         if(!$(this).next().is(":visible")) {
+           $(this).next().slideDown();
+         }
+      })
+      
+      // clean search history
+      $('a').click(function() {
+    	  window.sessionStorage.removeItem('search')
+    	  window.sessionStorage.setItem('page', 0)
+      })
+      
+      // hold selected menu
+      function renderSelectMenu() {
+        const path = window.location.pathname;
+        
+        // skip default page
+        if (path === '/')
+          return;
+        
+        const parts = path.split('/');
+        
+        let category = parts[1];
+        let selected = parts[2];
+        
+        // /@ 경로
+        if (selected === undefined || selected.length > 20) {
+        	$('#' + category).addClass('selected')
+        	return;
+        }
+        
+        // /@/@ 경로
+        const subMenuId = category + '_' +selected;
+        $('#' + category +'_ul').css({ display: 'block' });
+       	$('#' + category).addClass('selected')
+        $('#' + subMenuId).addClass('selected')
+      }
+	}());
+	</script>
+</div>
+</html>

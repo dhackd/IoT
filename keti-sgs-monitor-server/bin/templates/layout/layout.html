@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head th:include="fragments/config :: configFragment"></head>
+
+<!-- favicon --> 
+<link rel="icon" type="image/png" sizes="32x32" href="/image/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/image/favicon-96x96.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/image/favicon-16x16.png">
+<link rel="manifest" href="/image/manifest.json">
+<meta name="msapplication-TileImage" content="/image/ms-icon-144x144.png">
+
+<link href="/css/fragments/layout.css" rel="stylesheet">
+<header th:replace="fragments/header :: headerFragment"></header>
+
+<div th:class="body_frame">
+	<div th:class="menu" th:include="fragments/menu :: menuFragment"></div>
+	<div th:class="main">
+    <section th:include="components/loading :: loading" th:class="loading"></section>
+		<div th:class="content" layout:fragment="content"></div>
+	</div>
+</div>
+
+</html>

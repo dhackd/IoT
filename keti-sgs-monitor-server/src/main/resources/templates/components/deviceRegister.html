@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- source -->
+<section class="modal fade" id="deviceModal" tabindex="-1" role="dialog"
+	th:fragment="deviceRegister">
+	<div class="modal fade" id="deviceModal" tabindex="-1" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<h4 class="modal-title" id="deviceModalLabel">Register your new device</h4>
+						<div class='row'>
+							<span class='col-md-12'>Device</span> 
+							<input id='regDevice_id' class='col-md-12' placeholder='Your device name'>
+						</div>
+						<div class='row'>
+							<span class='col-md-12'>Device Type</span> <select
+								id='regDevice_type' class='col-md-12'
+								th:include="components/dropDown :: dropDown"></select>
+						</div>
+						<div class='row'>
+							<span class='col-md-12'>Device Address</span> <input
+								id='regDevice_addr' class='col-md-12'
+								placeholder='Your device address'>
+						</div>
+						<div class='row btnRow'>
+							<button type="button" class="btn cancel" data-dismiss="modal">Cancel</button>
+							<button type="button" class="btn register" id="registDevice">Register</button>
+						</div>
+						<script>
+							getDropDown($('#regDevice_type'), 'types')
+
+							$('#regDevice_addr').keyup(function(e) {
+								e.keyCode === 13 ? register() : '';
+							})
+
+							$('#registDevice').click(function() {
+								register()
+							})
+						</script>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+</html>

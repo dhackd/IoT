@@ -1,0 +1,69 @@
+server:
+  port: 8080
+  key: 47YpZQMKcuAfBH8yUznh3eQeexfZyVnfjx4UKCEHTATCv4Gk3wy6WcX6VfXeGf2wmWMgn7bHr
+  
+aergo:
+#  endpoint: 192.168.1.152:6061
+  endpoint: localhost:7845
+
+monitor:
+  servers: 
+    - server1:
+      name : KETI 본원
+      domain : 
+    - server2:
+      name: KETI 상암
+      domain : keticmr.mynetgear.com:54000
+    - server3:
+      name: KETI 판교
+      domain : 
+  
+spring:
+  elastic:
+    cluster: keti-cluster
+    hosts: 192.168.1.152
+    port: 9300
+    
+  redis:
+    lettuce:
+      pool:
+        max-active: 100
+        max-idle: 50
+        min-idle: 10
+    session:
+#      # 60 * 30
+#      expirate-time: 3600 
+      #for test
+      expirate-time: 15
+      session-pattern: Am*
+    cluster:
+      nodes: localhost:30001,localhost:30002,localhost:30003,localhost:30004,localhost:30005,localhost:30006
+      status: false
+      
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+    
+  datasource:
+    url: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=MYSQL
+#    url: jdbc:mysql://52.79.234.143:3306/keti
+    username: admin
+    password: keti123!
+    validationQuery: SELECT 1
+    
+  thymeleaf:
+    prefix: classpath:/templates/
+    cache: false
+    mode: HTML
+
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+
+  jpa:
+    hibernate:
+      globally_quoted_identifiers: true
+      ddl-auto: create
+      format_sql: true
+    show-sql: true

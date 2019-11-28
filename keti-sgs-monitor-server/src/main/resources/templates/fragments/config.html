@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head th:fragment="configFragment">
+<meta charset="UTF-8" />
+<title>KETI IOT</title>
+
+<!-- common script -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/bootstrap/bootstrap.min.js"></script>
+<script src="/lib/moment/moment.min.js"></script>
+<script src="/js/config.js"></script>
+
+<!-- common css -->
+<link href="/lib/bootstrap/bootstrap.min.css" rel="stylesheet">
+<link href="/lib/fontsAwesome/fonts-awesome.min.css" rel="stylesheet">
+<link href="/css/custom.css" rel="stylesheet">
+
+<!-- specific page css -->
+<th:block layout:fragment="css"></th:block>
+
+<!-- specific page script -->
+<th:block layout:fragment="script"></th:block>
+
+</head>
+</html>

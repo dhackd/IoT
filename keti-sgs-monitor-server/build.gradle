@@ -1,0 +1,16 @@
+dependencies {
+  compile project(':keti-sgs-elastic-server')
+  compile project(':keti-sgs-common')
+  
+  ext {
+    // thymeleaf layout
+    dialectVersion = '2.4.0'
+    yamlVersion = '1.21'
+  }
+
+  compile "org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}"
+  compile "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:${dialectVersion}"
+  
+  compile "org.yaml:snakeyaml:${yamlVersion}"
+  testCompile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+}

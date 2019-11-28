@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<section th:fragment="transactionManageTable">
+	<!-- table__head -->
+	<div class='table'>
+		<div class='table-row'>
+			<div class='c1 table-cell'>Device</div>
+			<div class='c2 table-cell'>Type</div>
+			<div class='c3 table-cell'>Address</div>
+			<div class='c4 table-cell'>Transaction ID</div>
+			<div class='c5 table-cell'>Registration Date</div>
+		</div>
+	</div>
+	<!-- table__body -->
+	<div class='table__body'>
+	 <div th:id='transactionManageTable__body' class='table'></div>
+	</div>
+</section>
+</html>

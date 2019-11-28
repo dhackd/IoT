@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="layout/layout">
+
+<th:block layout:fragment="script">
+	<script src="/js/components/pagination.js"></script>
+	<script src="/js/components/gasRecepitTable.js"></script>
+	<script src="/js/pages/gasReceipt.js"></script>
+
+</th:block>
+
+<th:block layout:fragment="css">
+	<link href="/lib/bootstrap/bootstrap-datetimepicker.min.css"
+		rel="stylesheet">
+</th:block>
+
+<div layout:fragment="content">
+	<div th:class="container-fluid">
+		<div class="row manageBox">
+			<div class='title'>가스 사용내역</div>
+		</div>
+		<div class='mainBox'>
+			<div class="row queryBox">
+				<section class="col-md-5 datePicker"
+					th:include="components/datePicker :: datePicker"></section>
+				<section class="col-md-12 searchBar"
+					th:include="components/searchBar :: searchBar"></section>
+			</div>
+			<div class="resultBox">
+				<section th:class='gas'
+					th:include="components/gasManageTable :: gasManageTable"></section>
+			</div>
+			<div class="pageBox">
+				<section th:include="components/pagination :: pagination"></section>
+			</div>
+		</div>
+		<script>
+		<!-- onRendered -->
+       search()
+		</script>
+	</div>
+</div>
+</html>

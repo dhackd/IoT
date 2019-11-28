@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="layout/layout">
+
+<th:block layout:fragment="script">
+	<script src="/js/components/pagination.js"></script>
+	<script src="/js/components/transactionManageTable.js"></script>
+	<script src="/js/pages/transactionManage.js"></script> 
+
+</th:block>
+
+<th:block layout:fragment="css">
+	<link href="/lib/bootstrap/bootstrap-datetimepicker.min.css"
+		rel="stylesheet">
+</th:block>
+
+<div layout:fragment="content">
+	<div th:class="container-fluid">
+		<div class="row manageBox">
+			<div class='title'>트랜잭션 관리</div>
+		</div>
+		<div class='mainBox'>
+			<div class="row queryBox">
+				<select class="col-md-1 dropDown" id="type_list"
+					th:include="components/dropDown :: dropDown"></select> 
+				<select
+					class="col-md-1 dropDown" id='search_type'>
+					<option value="">All Devices</option>
+					<option value="1">기기명</option>
+					<option value="2">주소</option>
+				</select>
+				<section class="col-md-5 datePicker"
+					th:include="components/datePicker :: datePicker"></section>
+				<section class="col-md-12 searchBar"
+					th:include="components/searchBar :: searchBar"></section>
+			</div>
+			<div class="resultBox">
+				<section th:class='transaction'
+					th:include="components/transactionManageTable :: transactionManageTable"></section>
+			</div>
+			<div class="pageBox">
+				<section th:include="components/pagination :: pagination"></section>
+			</div>
+		</div>
+		<script>
+		<!-- onRendered -->
+			getDropDownCallback($('#type_list'), 'types', function() {
+				  _loadSearchStatus()
+				  search()
+			})
+		</script>
+	</div>
+</div>
+</html>

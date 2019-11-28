@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorator="layout/layout">
+    
+<th:block layout:fragment="script">
+  <script src="/js/pages/deviceDetail.js"></script>
+</th:block>
+
+<div layout:fragment="content">
+    <div th:class="container-fluid">
+        <div class="manageBox row">
+            <div class='title'>
+                기기 상세 모니터링<span id='server_name'></span>
+            </div>
+            <div>
+                <button class='btn back'
+                    onClick='window.location.href="/monitoring/devices/"'>
+                    Back</button>
+            </div>
+        </div>
+        <div class="dashboard">
+            <div id="dashboard"></div>
+        </div>
+    </div>
+    <script>
+      getPeerLists();
+    </script>
+</div>
+</html>

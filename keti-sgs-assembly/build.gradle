@@ -1,0 +1,19 @@
+apply plugin: 'distribution'
+uploadArchives.enabled = false
+
+dependencies {
+  compile project(':keti-sgs-api-server')
+  
+}
+
+distributions {
+  main {
+    baseName = 'keti-sgs-api-server'
+    contents {
+      from { 'src/assembly' }
+      into('lib') {
+        from configurations.runtime
+      }
+    }
+  }
+}

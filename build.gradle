@@ -1,0 +1,167 @@
+group 'io.blocko'
+
+ext {
+  springBootVersion = '2.1.3.RELEASE'
+}
+
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+    mavenCentral()
+  }
+  dependencies {
+    classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0"
+  }
+}
+
+allprojects {
+  version '1.0'
+}
+
+subprojects {
+  // do Java specific configurations
+  apply plugin: 'java'
+  apply plugin: 'maven'
+  apply plugin: 'jacoco'
+  apply plugin: 'checkstyle'
+  apply plugin: 'com.github.hierynomus.license-report'
+
+  apply plugin: 'idea'
+  apply plugin: 'eclipse'
+  sourceCompatibility = JavaVersion.VERSION_1_8
+  targetCompatibility = JavaVersion.VERSION_1_8
+
+  eclipseJdt.doLast({
+  ant.propertyfile(file: ".settings/org.eclipse.core.resources.prefs") {
+    ant.entry(key: "eclipse.preferences.version", value: "1")
+    ant.entry(key: "encoding/<project>", value: "utf8")
+  }
+  })
+  compileJava.options.encoding = 'UTF-8'
+  compileTestJava.options.encoding = 'UTF-8'
+  javadoc.options.encoding = 'UTF-8'
+  
+  repositories {
+    mavenLocal()
+    maven {
+      url 'https://nexus.blocko.io/repository/blocko-maven-repository'
+    }
+    maven {
+      url "http://sevntu-checkstyle.github.com/sevntu.checkstyle/maven2"
+    }
+    maven {
+      url "http://maven.springframework.org/milestone/"
+    }
+    mavenCentral()
+    jcenter()
+  }
+
+  dependencies {
+   	compileOnly 'org.projectlombok:lombok:1.16.6'
+    compile 'org.slf4j:slf4j-api:1.7.25'
+    compile group: 'org.mybatis', name: 'mybatis-spring', version: '1.3.2'
+    compile group: 'org.mybatis', name: 'mybatis', version: '3.4.6'
+    compile group: 'org.springframework', name: 'spring-jdbc', version: '5.0.7.RELEASE'
+    compile group: 'org.springframework', name: 'spring-tx', version: '5.0.7.RELEASE'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
+
+    testCompile 'ch.qos.logback:logback-classic:1.2.3'
+    testCompile 'org.projectlombok:lombok:1.16.6'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.powermock:powermock-api-mockito2:2.0.0-beta.5'
+    testCompile 'org.powermock:powermock-module-junit4:2.0.0-beta.5'
+  }
+
+  test {
+    maxParallelForks = Runtime.runtime.availableProcessors() 
+    exclude 'keti-iot/**/*Tests.class'
+  }
+
+  checkstyle {
+    project.ext.checkstyleVersion = '8.7'
+    project.ext.sevntuChecksVersion = '1.26.0'
+
+    ignoreFailures = true
+    configFile = file("${rootProject.projectDir}/styles.xml")
+    reportsDir = file("${buildDir}/checkstyle-reports")
+    configurations {
+      checkstyle
+    }
+    checkstyleMain {
+      source = sourceSets.main.allSource
+      reportsDir = checkstyle.reportsDir
+    }
+    dependencies{
+      assert project.hasProperty("checkstyleVersion")
+
+      checkstyle "com.puppycrawl.tools:checkstyle:${checkstyleVersion}"
+      checkstyle "com.github.sevntu-checkstyle:sevntu-checks:${sevntuChecksVersion}"
+    }
+  }
+
+  uploadArchives {
+    repositories {
+      mavenDeployer {
+        pom.version = project.version
+        repository(url: "https://nexus.blocko.io/repository/blocko-maven-release-repository/") {
+          authentication(userName: mavenUser, password: mavenPassword)
+        }
+        snapshotRepository(url: "https://nexus.blocko.io/repository/blocko-maven-snapshot-repository/") {
+          authentication(userName: mavenUser, password: mavenPassword)
+        }
+      }
+    }
+  }
+  task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+  }
+ 
+  artifacts {
+    archives sourcesJar
+  }
+
+  jacoco {
+    toolVersion = "0.7.5.201505241946"
+    reportsDir = file("$buildDir/customJacocoReportDir")
+  }
+  jacocoTestReport {
+    group = "Reporting"
+    additionalSourceDirs = files(sourceSets.main.allSource.srcDirs)
+    sourceDirectories = files(sourceSets.main.allSource.srcDirs)
+    classDirectories = files(sourceSets.main.output)
+    reports {
+      xml {
+        enabled true
+        destination file("${buildDir}/jacoco/jacoco.xml")
+      }
+      csv.enabled false
+      html.enabled false
+    }
+  }
+// aggregates jacoco results from all subprojects and core project and generate a report
+  task jacocoRootTestReport(type: JacocoReport) {
+
+    sourceSets sourceSets.main
+
+    def jacocoTestFiles = ["$buildDir/jacoco/test.exec"]
+    subprojects.each { p ->
+        def coverageFileLocation = "$p.buildDir/jacoco/test.exec"
+        if (new File(coverageFileLocation).exists()) {
+            jacocoTestFiles << coverageFileLocation
+        }
+    }
+
+    logger.info('Aggregating next JaCoCo Coverage Files: {}', jacocoTestFiles)
+    executionData files(jacocoTestFiles)
+
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.enabled true
+    }
+  }
+}
+

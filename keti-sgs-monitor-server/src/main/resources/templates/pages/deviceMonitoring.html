@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="layout/layout">
+
+<th:block layout:fragment="script">
+  <script src="/js/components/pagination.js"></script>
+  <script src="/js/pages/deviceMonitoring.js"></script>
+</th:block>
+
+<div layout:fragment="content">
+	<div th:class="container-fluid">
+		<div class="monitorBox">
+			<div class="manageBox row">
+				<div class='title'>기기 모니터링<span id='server_count'></span></div> 
+				<div id="device_list" class='col-md-12 monitor'></div>
+			</div>
+		</div>
+		<div class="pageBox">
+       <section th:include="components/pagination :: pagination"></section>
+     </div>
+		<script>
+		  <!-- onRendered -->
+		  search()
+       
+		  setInterval(function() {
+			  search()
+			}, 5000);
+		</script>
+	</div>
+</div>
+</html>

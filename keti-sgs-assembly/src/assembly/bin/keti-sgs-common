@@ -1,0 +1,380 @@
+#!/bin/bash
+export SERVER_LAUNCHER_CLASS='keti.sgs.exec.KetiServerLauncher'
+export SERVER_DOCKER_NAME='keti'
+
+function debug() {
+  if [ -n "$DEBUG" ]; then
+    echo $@
+  fi
+}
+
+function message-on() {
+  printf "%s" "$@"
+}
+
+function fail() {
+  MESSAGE="$1"
+  echo -e "\\033[01;31m$MESSAGE\\033[00m"
+}
+
+function success() {
+  MESSAGE="$1"
+  echo -e "\\033[01;32m$MESSAGE\\033[00m"
+}
+
+function warning() {
+  MESSAGE=$1
+  echo -e "\\033[01;33m$MESSAGE\\033[00m"
+}
+
+function message() {
+  MESSAGE=$1
+  echo -e "\\033[00m$MESSAGE"
+}
+
+function strong() {
+  MESSAGE=$1
+  echo -e "\\033[01;32m$MESSAGE\\033[00m"
+}
+
+function print-version() {
+  keti_sgs_VERSION=${keti_sgs_VERSION:-$(cat "$keti_sgs_HOME/VERSION")}
+  if [ "Y" == "$PRETTY_PRINT" ]; then
+    success "Keti IoT $keti_sgs_VERSION"
+  else
+    echo "$keti_sgs_VERSION"
+  fi
+
+}
+
+function print-help() {
+  HELPFILE="$keti_sgs_DOC/help.txt"
+  if [ -e "$HELPFILE" ];then
+    cat "$HELPFILE"
+  fi
+}
+
+function execute-java() {
+  if [ -e `java -version 2>&1 | grep '' > /dev/null` ]; then
+    echo "" > /dev/null
+  else
+    echo "Java is not installed"
+    exit -1
+  fi
+
+  JARS=$(find "$keti_sgs_LIB" -name '*.jar' | tr '\n' ':')
+  CLASS_PATH=${CLASS_PATH:-$keti_sgs_CONF:$JARS}
+  debug "Execution command: java $JVM_OPTS -classpath $CLASS_PATH $MAIN_CLASS $@"
+  if [ "1" == "$DAEMON_MODE" ]; then
+    java $JVM_OPTS -classpath "$CLASS_PATH" "$MAIN_CLASS" $@ >/dev/null 2>&1 &
+  else
+    java $JVM_OPTS -classpath "$CLASS_PATH" "$MAIN_CLASS" $@
+  fi
+}
+
+################################################################################
+#  Server commands
+#   * check
+#   * configure
+#   * start
+#   * stop
+function configure-server() {
+  ARGS=""
+  while [[ $# -gt 0 ]]; do
+    ARG="$1"
+    shift
+    case "$ARG" in
+      "--log"|"-l")
+        LOG_LEVEL="$1"
+        shift
+        ;;
+      "--batch"|"-b")
+        MODE='BATCH'
+        ;;
+      *)
+        echo "Unknown argement: $ARG"
+        exit 1
+        ;;
+    esac
+  done
+  MODE=${MODE:-'INTERACTIVE'}
+  CONFIG_FILE=$keti_sgs_CONF/oauth.yaml
+  if [ -e $CONFIG_FILE ]; then
+    fail "Configuration file already exists."
+    message "Retry after 'rm -f $CONFIG_FILE'"
+    exit 1
+  fi
+
+  NODE_ENDPOINT=${NODE_ENDPOINT:-'http://localhost:3000'}
+  ADMIN_ADDRESS=${ADMIN_ADDRESS:-''}
+  SERVER_PRIVATEKEY=${SERVER_PRIVATEKEY:-$(create-key)}
+
+  if [ "$MODE" == 'INTERACTIVE' ]; then
+    echo "Input the coinstack node endpoint [$NODE_ENDPOINT]"
+    printf "> "
+    read A_NODE_ENDPOINT
+    if [ -n "$A_NODE_ENDPOINT" ]; then
+      NODE_ENDPOINT=$A_NODE_ENDPOINT
+    fi
+
+    echo "Input the administrator's address"
+    printf "> "
+    read A_ADMIN_ADDRESS
+    ADMIN_ADDRESS=$A_ADMIN_ADDRESS
+
+    echo "Input the server's private key [$SERVER_PRIVATEKEY]"
+    printf "> "
+    read A_SERVER_PRIVATEKEY
+    if [ -n "$A_SERVER_PRIVATEKEY" ]; then
+      SERVER_PRIVATEKEY=$A_SERVER_PRIVATEKEY
+    fi
+
+    echo "COINSTACK ENDPOINT:    $NODE_ENDPOINT"
+    echo "ADMINISTRATOR ADDRESS: $ADMIN_ADDRESS"
+    echo "SERVER PRIVATEKEY:     $SERVER_PRIVATEKEY"
+    echo ""
+    while true; do
+      printf "Process to generate the configuration file? [y/n] "
+      read A_PROCESS
+
+      case $A_PROCESS in
+        'y'|'Y')
+          break
+          ;;
+        'n'|'N')
+          fail 'Process cancelled by a user'
+          exit 1
+          ;;
+        *)
+          ;;
+      esac
+    done
+  fi
+  cat <<EOF > $CONFIG_FILE
+coinstack:
+  endpoint: $NODE_ENDPOINT
+
+oauth:
+  admin:
+    address: $ADMIN_ADDRESS
+  server:
+    privatekey: $SERVER_PRIVATEKEY
+EOF
+  success "The confguration file generated: $CONFIG_FILE"
+}
+
+function start-server-native() {
+  while test $# -gt 0
+  do
+    ARG="$1"
+    shift
+    case "$ARG" in
+      "--profile"|"-p")
+        EXEC_PROFILES="$1"
+        shift
+        ;;
+      "--daemon"|"-d")
+        DAEMON_MODE="1"
+        ;;
+    esac
+  done
+  LOGBACK_OPTS="-Dlogging.config=$keti_sgs_CONF/logback-server.xml"
+
+  if [ -z "$EXEC_PROFILES" ]; then
+    JVM_OPTS="$JVM_OPTS -Dspring.profiles.active=api-server,monitor"
+  else
+    JVM_OPTS="$JVM_OPTS -Dspring.profiles.active=api-server,monitor,$EXEC_PROFILES"
+  fi
+  JVM_OPTS="$JVM_OPTS -Dketi_sgs.home=$keti_sgs_HOME"
+  JVM_OPTS="$JVM_OPTS $LOGBACK_OPTS"
+  CONFIG_FILES=""
+  for CONFIG_FILE in $(find $keti_sgs_CONF -name '*.yaml' -exec basename {} \; | sed 's/^/classpath:\//')
+  do
+    if [ -z $CONFIG_FILES ]; then
+      CONFIG_FILES="$CONFIG_FILE"
+    else
+      CONFIG_FILES="$CONFIG_FILES,$CONFIG_FILE"
+    fi
+  done
+
+  JARS=$(find "$keti_sgs_LIB" -name '*.jar' | tr '\n' ':')
+  CLASS_PATH="$keti_sgs_CONF:$JARS"
+
+  export JVM_OPTS
+  export MAIN_CLASS="$SERVER_LAUNCHER_CLASS"
+  export DAEMON_MODE
+  export CLASS_PATH
+
+  execute-java "--spring.config.location=$CONFIG_FILES"
+}
+
+function start-server-docker() {
+  keti_sgs_VERSION=${keti_sgs_VERSION:-$(cat "$keti_sgs_HOME/VERSION")}
+  IMAGE_EXISTS=$(docker images |grep coinstack-oauth |grep "$keti_sgs_VERSION")
+  if [ -z "$IMAGE_EXISTS" ]; then
+    IMAGE_PATH="$keti_sgs_LIB/coinstack-oauth-$keti_sgs_VERSION.img"
+    echo "Loading image from $IMAGE_PATH"
+    docker load -i "$IMAGE_PATH"
+    docker rm -f "$SERVER_DOCKER_NAME" 2&>/dev/null
+  fi
+
+  echo "Starting $SERVER_DOCKER_NAME..."
+  docker start "$SERVER_DOCKER_NAME"
+  if [ 0 -eq $? ] ; then
+    echo "Success to start $SERVER_DOCKER_NAME"
+  else
+    echo "Running $SERVER_DOCKER_NAME..."
+    docker run --name $SERVER_DOCKER_NAME \
+      -p 8080:8080\
+      -v "$keti_sgs_CONF":/coinstack-oauth/conf\
+      -v "$keti_sgs_LOG":/coinstack-oauth/log\
+      -d coinstack-oauth:"$keti_sgs_VERSION" >/dev/null
+  fi
+
+}
+
+function stop-server-native() {
+  ANSWER="$(jps -l | grep $SERVER_LAUNCHER_CLASS)"
+  if [ -z "$ANSWER" ]; then
+    fail "No process detected"
+    exit -1
+  fi
+  curl -u "admin:admin" -s -X POST "http://localhost:8080/manage/shutdown" > /dev/null
+  success "Server stopped"
+}
+
+function stop-server-docker() {
+  ANSWER="$(docker ps | grep $SERVER_DOCKER_NAME)"
+  if [ -z "$ANSWER" ]; then
+    fail "No process detected"
+    exit -1
+  fi
+  curl -u "admin:admin" -s -X POST "http://localhost:8080/manage/shutdown" > /dev/null
+  success "Server stopped"
+}
+
+function check-server-native() {
+  ANSWER="$(curl -is "http://localhost:8080/manage/health" | grep 'HTTP/1.1' | awk '{print $2}')"
+  FLAG="$(jps -l | grep $SERVER_LAUNCHER_CLASS)"
+  if [ "200" != "$ANSWER" ]; then
+    if [ -z "$FLAG" ]; then
+      fail "Server stopped"
+    else
+      warning "Server is booting"
+    fi
+  else
+    success "Server is running"
+  fi
+}
+
+function check-server-docker() {
+  ANSWER="$(curl -is "http://localhost:8080/manage/health" | grep 'HTTP/1.1' | awk '{print $2}')"
+  FLAG="$(docker ps | grep $SERVER_DOCKER_NAME)"
+  if [ "200" != "$ANSWER" ]; then
+    if [ -z "$FLAG" ]; then
+      fail "Server stopped"
+    else
+      warning "Server is booting"
+    fi
+  else
+    success "Server is running"
+  fi
+}
+
+function run-server() {
+  case "$EXECUTION_MODE" in
+    "docker")
+      success "Server is running"
+      start-server-docker $@
+      ;;
+    "native")
+      success "Server is running"
+      start-server-native $@
+      ;;
+    "")
+      fail "Execution mode not specified"
+      ;;
+    *)
+      fail "Unknown mode: $EXECUTION_MODE"
+      ;;
+  esac
+}
+
+function start-server() {
+  case "$EXECUTION_MODE" in
+    "docker")
+      success "Server started"
+      start-server-docker $@
+      ;;
+    "native")
+      success "Server started"
+      start-server-native --daemon $@
+      ;;
+    "")
+      fail "Execution mode not specified"
+      ;;
+    *)
+      fail "Unknown mode: $EXECUTION_MODE"
+      ;;
+  esac
+}
+
+function stop-server() {
+  case $EXECUTION_MODE in
+    "docker")
+      stop-server-docker $@
+      ;;
+    "native")
+      stop-server-native $@
+      ;;
+    "")
+      fail "Execution mode not specified"
+      ;;
+    *)
+      fail "Unknown mode: $EXECUTION_MODE"
+      ;;
+  esac
+}
+
+function check-server() {
+  case $EXECUTION_MODE in
+    "docker")
+      check-server-docker $@
+      ;;
+    "native")
+      check-server-native $@
+      ;;
+    "")
+      fail "Execution mode not specified"
+      ;;
+    *)
+      fail "Unknown mode: $EXECUTION_MODE"
+      ;;
+  esac
+}
+
+function configure-cli-logger() {
+  ARGS=""
+  while [[ $# -gt 0 ]]; do
+    ARG="$1"
+    shift
+    case "$ARG" in
+      "--log"|"-l")
+        LOG_LEVEL="$1"
+        shift
+        ;;
+      *)
+        ARGS="$ARGS $ARG"
+        ;;
+    esac
+  done
+  LOG_LEVEL=${LOG_LEVEL:-none}
+  LOG_CONFIGFILE="$keti_sgs_CONF/logback-cli-$LOG_LEVEL.xml"
+  if [ ! -f "$LOG_CONFIGFILE" ]; then
+    fail "Unknown log level: $LOG_LEVEL"
+    LOG_LEVEL='none'
+  fi
+  export LOG_CONFIGFILE="$keti_sgs_CONF/logback-cli-$LOG_LEVEL.xml"
+  export LOGBACK_OPTS="-Dlogback.configurationFile=$LOG_CONFIGFILE"
+  export ARGS
+}

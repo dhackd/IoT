@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="layout/layout">
+
+<th:block layout:fragment="script">
+	<script src="/js/components/pagination.js"></script>
+	<script src="/js/components/transactionManageTable.js"></script>
+	<script src="/js/pages/transactionDetail.js"></script>
+
+</th:block>
+
+<th:block layout:fragment="css">
+	<link href="/lib/bootstrap/bootstrap-datetimepicker.min.css"
+		rel="stylesheet">
+</th:block>
+
+<div layout:fragment="content">
+	<div th:class="container-fluid">
+		<div class="row manageBox">
+			<div class='title'>트랜잭션 관리</div>
+			<div>
+				<button class='btn back' onClick='window.location.href="/transactionManage"'>
+					Back
+				</button>
+			</div>
+		</div>
+		<div class='halfBox'>
+			<div class='dataBox'>
+			 <div class='title'>Overview</div>
+	     <div class='sub_title'>Device Id</div>
+	     <div class='value' id='deviceId'></div>
+	     <!-- 발생 주체 -->
+	     <div class='sub_title'>From</div>
+	     <div class='value' id='from'></div>
+	     <div class='sub_title'>To</div>
+	     <div class='value' id='to'></div>
+	     <div class='sub_title'>Transaction ID</div>
+	     <div class='value' id='txid'></div>
+	     <div class='sub_title'>Block Hash</div>
+	     <div class='value' id='blockHash'></div>
+	    </div>
+			<div class='dataBox'>
+	     <div class='title'>Data</div>
+       <div class='sub_title'>Value</div>
+       <div class='value-fluid' id='payload'></div>
+	    </div>
+    </div>
+		<script>
+		<!-- onRendered -->
+			search()
+		</script>
+	</div>
+</div>
+</html>

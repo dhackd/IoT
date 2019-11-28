@@ -1,0 +1,117 @@
+<html xmlns:th='https://www.thymeleaf.org'>
+<head>
+<title>KETI IOT</title>
+<link href="/lib/bootstrap/bootstrap.min.css" rel="stylesheet">
+
+<!-- favicon -->
+<link rel="icon" type="image/png" sizes="32x32"
+	href="/image/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96"
+	href="/image/favicon-96x96.png">
+<link rel="icon" type="image/png" sizes="16x16"
+	href="/image/favicon-16x16.png">
+<link rel="manifest" href="/image/manifest.json">
+<meta name="msapplication-TileImage"
+	content="/image/ms-icon-144x144.png">
+
+</head>
+<body>
+	<div th:class='login_form'>
+		<form th:action='@{/login}' method='post'>
+			<fieldset>
+			 <div class='logo'>
+				<img src='/image/KETI_logo.png'>
+			 </div>
+				<div th:if='${param.error}' class='error'>아이디 혹은 비밀번호를 잘못
+					입력하셨습니다.</div>
+				<div th:class='row'>
+					<div th:class='title'>
+					  Login to your account
+					</div>
+				</div>
+				<div th:class='row'>
+					<div class='sub_title'>Id</div>
+					<input type='text' id='username' name='username' placeholder='Your Id' autofocus/>
+				</div>
+				<div th:class='row'>
+					<div class='sub_title'>Password</div> 
+					<input type='password' id='password' name='password' placeholder='Your Password'/>
+				</div>
+				<div class='form-actions row'>
+					<button type='submit'
+						class='btn'>Login</button>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</body>
+
+<style>
+body {
+	background-color: #005f9e
+}
+
+.row {
+  margin: 0px;
+}
+
+.logo {
+  text-align: center;
+}
+
+.login_form {
+	margin-top: 10vh;
+	margin-left: 35vw;
+	padding: 50px;
+	width: 30vw;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.08);
+	background-color: #ffffff;
+}
+
+.login_form img {
+  width: 220px;
+	padding: 10px;
+	margin-bottom: 20px;
+}
+
+.login_form .title {
+  font-size: calc(20/16 * 1em);
+  font-weight: bold;
+  color: #595959;
+  margin: 10px 0px 10px 0px;
+}
+
+.login_form .sub_title {
+  font-size: calc(17/16 * 1em);
+  color: #595959;
+  margin-top: 10px;
+}
+
+.login_form .error {
+	line-height: 30px;
+	color: #FF0080;
+}
+
+.login_form .form {
+	margin: 0px;
+}
+
+.login_form input {
+  width: 100%;
+  height: 50px;
+  font-size: calc(18/16 * 1em);
+	padding: 2px;
+}
+
+.login_form button {
+  margin-top: 30px;
+  width: 100%;
+  height: 50px;
+  background-color: #0083ff;
+	border-radius: 3px;
+	box-shadow: 0 10px 20px 0 rgba(0, 95, 158, 0.2);
+	color: #FFFFFF;
+}
+</style>
+</html>

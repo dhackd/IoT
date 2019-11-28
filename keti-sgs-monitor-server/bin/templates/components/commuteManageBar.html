@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<section th:fragment="commuteManageBar">
+	<!-- source -->
+	<button id='commute_allow_all'>전체 승인</button>
+	<script>
+		$('#commute_allow_all').click(function() {
+			allowRequestList(1)
+		})
+	</script>
+</section>
+
+</html>

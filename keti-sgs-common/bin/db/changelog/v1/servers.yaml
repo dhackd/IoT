@@ -1,0 +1,33 @@
+databaseChangeLog:
+    - changeSet:
+        id: create SERVERS table
+        author: dilcheck
+        changes:
+            - createTable:
+                tableName: SERVERS
+                columns:
+                    - column:
+                        name: SERVER_ID
+                        type: varchar(15)
+                        constraints:
+                            nullable: false
+                    - column:
+                        name: NODE_ID
+                        type: varchar(15)
+                        constraints:
+                            nullable: false
+                    - column:
+                        name: IP
+                        type: varchar(20)
+                        constraints:
+                            nullable: false
+            - createIndex:
+                indexName: IDX_SERVER_ID
+                tableName: SERVERS
+                columns:
+                  - column:
+                      name: SERVER_ID
+            - addUniqueConstraint:
+                tableName: SERVERS
+                columnNames: SERVER_ID
+                constraintName: SERVER_ID_UNIQUE

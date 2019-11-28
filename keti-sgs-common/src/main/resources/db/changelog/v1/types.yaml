@@ -1,0 +1,28 @@
+databaseChangeLog:
+    - changeSet:
+        id: create TYPES table
+        author: dilcheck
+        changes:
+            - createTable:
+                tableName: TYPES
+                columns:
+                    - column:
+                        name: CODE
+                        type: varchar(20)
+                        constraints:
+                            nullable: false
+                    - column:
+                        name: NAME
+                        type: varchar(30)
+                        constraints:
+                            nullable: false
+            - createIndex:
+                indexName: IDX_CODE
+                tableName: TYPES
+                columns:
+                  - column:
+                      name: CODE
+            - addUniqueConstraint:
+                tableName: TYPES
+                columnNames: CODE
+                constraintName: CODE_UNIQUE

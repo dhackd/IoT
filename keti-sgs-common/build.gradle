@@ -1,0 +1,39 @@
+dependencies {
+  ext {
+    // database
+    liquibaseVersion = '3.6.3'
+    h2databaseVersion = '1.4.197'
+    
+    //heraj version
+    heraj = '1.1.0'
+    
+    //apache common
+    apacheCommons = '2.6.2'
+    
+    //mysql 
+    mysql = '8.0.16'
+  }
+  	
+	compile "com.google.guava:guava:23.0"
+	
+	compile "com.fasterxml.jackson.core:jackson-databind:2.9.3"
+	testCompile "ch.qos.logback:logback-classic:1.2.3"
+	
+	compile "org.bitcoinj:bitcoinj-core:0.15" // for view
+	
+	compile "org.springframework.boot:spring-boot-starter-security:${springBootVersion}"
+	compile "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
+	compile "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+		  
+  compile "org.liquibase:liquibase-core:${liquibaseVersion}"
+  runtime "com.h2database:h2:${h2databaseVersion}"
+  
+  compile "mysql:mysql-connector-java:${mysql}"
+  
+  compile "io.aergo:heraj-transport:${heraj}"
+  compile "io.aergo:heraj-wallet:${heraj}"
+  compile "io.aergo:heraj-smart-contract:${heraj}"
+	implementation "org.apache.commons:commons-pool2:${apacheCommons}"
+  
+	testCompile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+}

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="singleDatePicker">
+	<!-- source -->
+	<div class="form-group">
+		<div class='input-group date' id='single_date'>
+			<input type='text' class="form-control" /> <span
+				class="input-group-addon"> <span class="far fa-calendar-alt"></span>
+			</span>
+		</div>
+	</div>
+
+	<!-- script -->
+	<script src="/lib/bootstrap/bootstrap-datetimepicker.min.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			$('#single_date').datetimepicker({
+				format : 'L'
+			});
+		});
+	</script>
+</div>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<header th:fragment="headerFragment">
+	<a rel='noopener' href="/" th:class="logo"> <img src="/image/KETI_logo_small.png" alt='logo'>
+	</a>
+	<div th:class="main">
+		<div class="userBox btn-group">
+			<div data-toggle="dropdown">
+				<span th:id="userName" th:text=${session.userName}></span> <i
+					class="fas fa-caret-down"></i>
+			</div>
+			<ul class="dropdown-menu">
+				<li><a href="/logout">로그아웃</a></li>
+			</ul>
+		</div>
+	</div>
+	<script>
+		
+	</script>
+</header>
+</html>

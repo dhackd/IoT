@@ -1,0 +1,22 @@
+dependencies {
+  compile project(':keti-sgs-common')
+  compile project(':keti-sgs-monitor-server')
+  
+  ext {
+  
+    // database
+    liquibaseVersion = '3.6.3'
+    h2databaseVersion = '1.4.197'
+    
+    // api dashboard
+    swagger2Version = '2.8.0'
+    
+  }
+
+  testCompile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+  
+  compile "io.springfox:springfox-swagger2:${swagger2Version}"
+  compile "io.springfox:springfox-swagger-ui:${swagger2Version}"
+  
+  compile "org.springframework.boot:spring-boot-starter-data-redis:${springBootVersion}"
+}

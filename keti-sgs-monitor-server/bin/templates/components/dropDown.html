@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<section th:fragment="dropDown">
+	<!-- source -->
+	<select class="col-md-12"></select>
+
+	<!-- script -->
+	<script>
+    function getDropDown(component, type) {
+      $.ajax({
+        type : "GET",
+        url : apiV1 + "/" + type,
+        success : function(res) {
+          _renderDepts(component, res.data);
+        }
+      })
+    }
+    
+    function getDropDownCallback(component, type, callback) {
+        $.ajax({
+          type : "GET",
+          url : apiV1 + "/" + type,
+          success : function(res) {
+            _renderDepts(component, res.data);
+            return callback()
+          }
+        })
+      }
+    
+    function _renderDepts(component, dataList) {
+      let list='<option value=""> All Types </option>';
+      
+      dataList.forEach(data => {
+        list +='<option value="'+ data.code + '">'+ data.name + '</option>'
+      })
+      
+      component.html(list)
+    }
+	</script>
+</section>
+</html>

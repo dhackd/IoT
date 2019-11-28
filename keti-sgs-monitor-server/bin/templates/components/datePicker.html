@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="datePicker">
+	<!-- source -->
+	<div class='col-md-offset-4 col-md-1 datepicker_title'>From</div>
+	<div class='col-md-3'>
+		<div class="form-group">
+			<div class='input-group date' id='startDate'>
+				<input type='text' class="form-control input-group-addon" placeholder="MM/DD/YYYY" />
+			</div>
+		</div>
+	</div>
+	<div class='col-md-1 datepicker_title'>To</div>
+	<div class='col-md-3'>
+		<div class="form-group">
+			<div class='input-group date' id='endDate'>
+				<input type='text' class="form-control input-group-addon" placeholder="MM/DD/YYYY" /> 
+			</div>
+		</div>
+	</div>
+
+	<!-- script -->
+	<script src="/lib/bootstrap/bootstrap-datetimepicker.min.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			$('#startDate').datetimepicker({
+				format : 'L'
+			});
+			$('#endDate').datetimepicker({
+				useCurrent : false, //Important! See issue #1075
+				format : 'L'
+			});
+
+			$("#startDate").on("dp.change", function(e) {
+				$('#endDate').data("DateTimePicker").minDate(e.date);
+			});
+			$("#endDate").on("dp.change", function(e) {
+				$('#startDate').data("DateTimePicker").maxDate(e.date);
+			});
+		});
+	</script>
+</div>
+</html>

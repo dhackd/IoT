@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<section th:fragment="loading">
+	<!-- source -->
+	<img src="/image/loading.gif">
+
+	<!-- script -->
+	<script>
+		function onLoad() {
+			$('.loading').addClass("active")
+		}
+		function complete() {
+			$('.loading').removeClass("active")
+		}
+	</script>
+</section>
+</html>

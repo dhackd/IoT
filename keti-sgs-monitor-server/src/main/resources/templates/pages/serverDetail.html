@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="layout/layout">
+
+<div layout:fragment="content">
+	<div th:class="container-fluid">
+		<div class="manageBox row">
+			<div class='title'></div>
+			<div>
+				<button class='btn back'
+					onClick='window.location.href="/monitoring/servers/"'>
+					Back</button>
+			</div>
+		</div>
+		<div class="dashboard">
+			<div id="dashboard"></div>
+		</div>
+	</div>
+	<script>
+		const path = window.location.pathname.split('/');
+		const domain = path[4];
+		const type = path[3];
+		var nm = "";
+		var title = "";
+		if (type == "vm") {
+			nm = "keti";
+			$('.title').html('서버 상세 모니터링<span id=server_name></span>')
+		} else {
+			nm = "aergo";
+			$('.title').html('노드 상세 모니터링<span id=node_name></span>')
+		}
+
+		const dashboard = 'http://' + domain + '/d/' + type + '/' + type
+				+ '-metrics?orgId=1&var-' + type + '=' + nm
+				+ '&refresh=10s&kiosk';
+
+		if (!domain) {
+			$('#dashboard').html('<div class="failedDashboard"><span>요청하신 서버 IP 주소를 확인해주세요.</span></div>');
+		}
+		else{
+			$('#dashboard').html('<iframe src="'+ dashboard +'"></iframe>');
+		}
+	</script>
+</div>
+</html>

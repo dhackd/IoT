@@ -1,0 +1,7 @@
+dependencies {
+  compile project(':keti-sgs-common')
+  
+  compile "org.springframework.data:spring-data-elasticsearch:3.2.0.M2"
+  
+  testCompile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+}

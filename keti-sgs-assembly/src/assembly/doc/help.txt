@@ -1,0 +1,17 @@
+usage: coinstack-oauth <command> [<subcommand>] [--log <loglevel>] [<args>]
+
+These are various coinstack oauth cli:
+help
+                        Print the help out - you can see this.
+
+server
+  check                 Check a server status
+  configure             Configure an oauth server setting
+    --batch             Configure as batch not interactive
+  run                   Run an oauth server
+    --daemon            Run an oauth server as daemon
+    --profile           Add execution profiles on run
+  start                 Run an oauth server as daemon
+    --profile           Add execution profiles on run
+  stop                  Stop a running oauth server
+  

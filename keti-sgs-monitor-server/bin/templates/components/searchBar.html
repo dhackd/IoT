@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<section th:fragment="searchBar">
+	<!-- source -->
+	<span class="icon" id ='search_btn'><i class="fa fa-search"></i></span>
+	<input class="col-md-12" type="text" id='search_data' placeholder='Search by  Device / Type / Address'>
+
+	<script>
+		$('#search_data').keyup(function(e) {
+			window.sessionStorage.setItem('page', 0)
+			e.keyCode === 13 ? search() : '';
+		})
+
+		$('#search_btn').click(function() {
+			window.sessionStorage.setItem('page', 0)
+			search();
+		})
+	</script>
+</section>
+</html>
